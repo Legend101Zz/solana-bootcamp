@@ -76,7 +76,7 @@ import {
 
   // get the latest recent blockhash
   let recentBlockhash = await connection.getLatestBlockhash().then(res => res.blockhash);
-
+  console.log("recent hash", recentBlockhash);
   // create a message (v0)
   const message = new TransactionMessage({
     payerKey: payer.publicKey,
@@ -89,17 +89,22 @@ import {
 
   // console.log("tx before signing:", tx);
 
-  // sign the transaction with our needed Signers (e.g. `payer` and `keypair`)
   tx.sign([payer, keypair]);
 
   console.log("tx after signing:", tx);
+  console.log("Connection endpoint:", connection.rpcEndpoint);
 
   // tx.signatures.toString("base58")
 
-  // console.log(tx.signatures);
+  // console.log(tx.signatures);s
 
+  // sign the transaction with our needed Signers (e.g. `payer` and `keypair`)
   // actually send the transaction
-  const sig = await connection.sendTransaction(tx);
+  const wireTransaction = tx.serialize();
+  const sig = await connection.sendRawTransaction(wireTransaction, {
+    skipPreflight: false,
+    preflightCommitment: "confirmed",
+  });
 
   /**
    * display some helper text

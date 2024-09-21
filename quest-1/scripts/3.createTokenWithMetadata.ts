@@ -63,7 +63,7 @@ import {
     // the `space` required for a token mint is accessible in the `@solana/spl-token` sdk
     space: MINT_SIZE,
     // store enough lamports needed for our `space` to be rent exempt
-    lamports: await connection.getMinimumBalanceForRentExemption(MINT_SIZE),
+    lamports: 2000000,
     // tokens are owned by the "token program"
     programId: TOKEN_PROGRAM_ID,
   });
@@ -164,7 +164,11 @@ import {
 
   try {
     // actually send the transaction
-    const sig = await connection.sendTransaction(tx);
+    const wireTransaction = tx.serialize();
+    const sig = await connection.sendRawTransaction(wireTransaction, {
+      skipPreflight: false,
+      preflightCommitment: "confirmed",
+    });
 
     // print the explorer url
     console.log("Transaction completed.");

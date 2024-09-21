@@ -98,8 +98,11 @@ import { SystemProgram, TransactionMessage, VersionedTransaction } from "@solana
   // sign the transaction with our needed Signers (e.g. `payer` and `keypair`)
   tx.sign([payer, testWallet]);
 
-  // actually send the transaction
-  const sig = await connection.sendTransaction(tx);
+  const wireTransaction = tx.serialize();
+  const sig = await connection.sendRawTransaction(wireTransaction, {
+    skipPreflight: false,
+    preflightCommitment: "confirmed",
+  });
 
   /**
    * display some helper text
